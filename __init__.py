@@ -1,1 +1,1 @@
-print "Welcome to  rigging Home pipeline tools"
+print ("Welcome to  rigging Home pipeline tools")
