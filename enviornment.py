@@ -1,6 +1,5 @@
 import os
-
-PROJECT_RIG_PATH = r'D:\work\Home_project'
+from static import directories
 
 
 class ENV:
@@ -35,8 +34,8 @@ class ENV:
         return self.skeleton_path
 
     def create_data_folder(self):
-        if os.path.exists(PROJECT_RIG_PATH):
-            self.data_path = self.create_folder('DATA', PROJECT_RIG_PATH)
+        if os.path.exists(directories.PROJECT_PATH):
+            self.data_path = self.create_folder('DATA', directories.PROJECT_PATH)
 
     def create_sub_folders(self):
         self.control_path = self.create_folder('control', self.data_path)
