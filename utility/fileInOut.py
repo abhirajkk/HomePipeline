@@ -15,6 +15,11 @@ def export_as_maya_file(name, path):
     pm.exportSelected(file_name)
 
 
+def import_maya_file(name, path):
+    file_name = os.path.join(path, name + '.mb')
+    pm.importFile(file_name)
+
+
 def version_check(name, path):
     if os.path.exists(os.path.join(path, name)):
         # check if version folder exist or not

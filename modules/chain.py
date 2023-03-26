@@ -14,5 +14,5 @@ class Chain:
         fileInOut.export_as_maya_file(name, directories.CHAIN)
 
     @classmethod
-    def import_chain(cls):
-        pass
+    def import_chain(cls, name):
+        fileInOut.import_maya_file(name, directories.CHAIN)
