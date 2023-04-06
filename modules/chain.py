@@ -23,3 +23,5 @@ class Chain:
         chain = pm.ls('{}_*_JNT'.format(name), type='joint')
         if chain:
             return chain
+        else:
+            return None

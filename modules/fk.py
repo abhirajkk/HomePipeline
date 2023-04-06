@@ -12,16 +12,26 @@ class FK(module.Base):
     def __init__(self, name):
         self.module_name = name
         super(FK, self).__init__('{}_{}'.format(self.module_name, 'fk'))
-        self._fk_data = {}
 
     def build_fk(self):
-        self.build()
+        joints = chain.Chain.get_chain_from_scene(self.module_name)
+        if joints:
+            self.build()
+            zero_nodes = []
+            ctrl_nodes = []
+            for joint in joints:
+                fk_ctrl = control.Control(joint.replace('_JNT', '_fk'))
+                fk_ctrl.build()
+                pm.parent(fk_ctrl.zero, self.controls)
+                pm.matchTransform(fk_ctrl.zero, joint)
+                zero_nodes.append(fk_ctrl.zero)
+                ctrl_nodes.append(fk_ctrl.ctrl)
 
-        for joint in chain.Chain.get_chain_from_scene(self.module_name):
-            ctrl = control.Control(joint.replace('_JNT', '_fk'))
-            ctrl.build()
-            pm.parent(ctrl.zero, self.controls)
-            self._fk_data[joint.name()] = ctrl
-        # items = self._fk_data.keys()
-        # for i in range(1, len(items)):
-        #     pm.parent(items.index(i))
+            # set hierarchy
+            for i in range(1, len(zero_nodes)):
+                pm.parent(zero_nodes[i], ctrl_nodes[i-1])
+        else:
+            pm.warning('Cant find joint chain!!')
+
+    def build_chain(self):
+        pass
