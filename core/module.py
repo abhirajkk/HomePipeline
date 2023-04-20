@@ -8,7 +8,7 @@ class Base:
         self.module_nodes = ['inputs', 'outputs', 'controls', 'deform']
         self._module_data = {}
 
-    def build(self):
+    def build_module(self):
         pm.createNode('transform', n=self.top_node)
         for each in self.module_nodes:
             node = pm.createNode('transform', n='{}_{}'.format(self.name, each), p=self.top_node)
