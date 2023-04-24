@@ -11,6 +11,7 @@ class DagNode(module.Base):
         super(DagNode, self).__init__(name)
         self._hierarchy = ['zero', 'offset', 'ctrl']
         self.control_name = 'name'
+        self._lock_translate = True
         print("Ran Dag node init")
 
     def build_dag(self):
@@ -21,10 +22,20 @@ class DagNode(module.Base):
             if i > 0:
                 pm.parent(nodes[i], nodes[i-1])
             setattr(self, each, grp.name())
+        return self.__new__(DagNode)
 
-    @classmethod
-    def lock_translate(cls, node, value=True, attrs=('tx', 'ty', 'tz')):
-        cls.lock_attr(node, value, attrs)
+    @property
+    def lock_translate(self):
+        return self._lock_translate
+
+    @lock_translate.setter
+    def lock_translate(self, value):
+        if isinstance(value, bool):
+            self.lock_attr(self.ctrl, value=True, attrs=('tx', 'ty', 'tz'))
+
+    # @classmethod
+    # def lock_translate(cls, node, value=True, attrs=('tx', 'ty', 'tz')):
+    #     cls.lock_attr(node, value, attrs)
 
     @classmethod
     def lock_rotate(cls, node, value=True, attrs=('rx', 'ry', 'rz')):
@@ -34,8 +45,8 @@ class DagNode(module.Base):
     def lock_scale(cls, node, value=True, attrs=('sx', 'sy', 'sz')):
         cls.lock_attr(node, value, attrs)
 
-    @staticmethod
-    def lock_attr(node, value, attrs):
+    @classmethod
+    def lock_attr(cls, node, value, attrs):
         if value:
             for att in attrs:
                 pm.PyNode(node).attr(att).lock()
