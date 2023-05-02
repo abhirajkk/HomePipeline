@@ -20,23 +20,8 @@ class Control:
             if i > 0:
                 pm.parent(nodes[i], nodes[i-1])
 
-    def get_node(self, node):
-        return self._control_data.get(node)
-
     def __getitem__(self, item):
         return self._control_data.get(item)
-
-    @property
-    def zero(self):
-        return self._control_data['zero']
-
-    @property
-    def offset(self):
-        return self._control_data['offset']
-
-    @property
-    def ctrl(self):
-        return self._control_data['ctrl']
 
     @property
     def hierarchy(self):
