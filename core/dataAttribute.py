@@ -10,11 +10,13 @@ class DataClass:
         self.module = None
         self.side = 'M'
         self.color = 17
-        self.hierarchy = ['zero', 'offset', 'ctrl']
         self.lock_visibility = True
-        self.lock_translate = True
+        self.lock_translate = False
         self.lock_rotate = False
-        self.lock_scale = True
+        self.lock_scale = False
+
+        # internal attributes
+        self.hierarchy = ['zero', 'offset', 'ctrl']
         self.module_hierarchy = ['inputs', 'outputs', 'controls', 'deform']
         self.nodes = {}
         self.guide = None
@@ -23,31 +25,11 @@ class DataClass:
         self.outputs = {}
         self.controls = {}
 
+        # override by user input
         for key, value in kwargs.items():
             if key in self.__dict__:
                 self.__dict__[key] = value
 
+    def __getattr__(self, item):
+        return self.controls[item]
 
-
-'''
-class DataClass(metaclass=coreMeta.Meta):
-    def __init__(self, *args, **kwargs):
-
-        self.name = kwargs.get('name', 'fk')
-        self.component = kwargs.get('component', None)
-        self.module = kwargs.get('module', None)
-        self.side = kwargs.get('side', 'M')
-        self.color = kwargs.get('color', 17)
-        self.hierarchy = kwargs.get('hierarchy', ['zero', 'offset', 'ctrl'])
-        self.lock_visibility = kwargs.get('lock_visibility', True)
-        self.lock_translate = kwargs.get('lock_translate', True)
-        self.lock_rotate = kwargs.get('lock_rotate', False)
-        self.lock_scale = kwargs.get('lock_rotate', True)
-        self.module_hierarchy = kwargs.get('hierarchy', ['inputs', 'outputs', 'controls', 'deform'])
-        self.nodes = kwargs.get('nodes', {})
-        self.guide = kwargs.get('guide', None)
-        self.bind = kwargs.get('bind', {})
-        self.inputs = kwargs.get('inputs', {})
-        self.outputs = kwargs.get('outputs', {})
-        self.controls = kwargs.get('controls', {})
-'''

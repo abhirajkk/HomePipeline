@@ -3,6 +3,9 @@ from importlib import reload
 from ..core import coreMeta
 reload(coreMeta)
 
+from ..functions import attrFn
+reload(attrFn)
+
 
 class Control:
     def __init__(self, name):
@@ -10,6 +13,11 @@ class Control:
         self.control_name = name
         self._node = None
         self._control_data = {}
+        self.translate = True
+        self.rotate = True
+        self.scale = True
+        self.visibility = False
+        self.shape = None
 
     def build(self):
         nodes = []
@@ -19,9 +27,19 @@ class Control:
             self._control_data[each] = grp.name()
             if i > 0:
                 pm.parent(nodes[i], nodes[i-1])
+            if each == self._hierarchy[-1]:
+                self._node = grp
+                self.lock_translate(grp, self.translate)
+                self.lock_rotate(grp, self.rotate)
+                self.lock_scale(grp, self.scale)
+                self.lock_visibility(grp, self.visibility)
 
-    def __getitem__(self, item):
+    def __getattr__(self, item):
         return self._control_data.get(item)
+
+    @property
+    def node(self):
+        return self._node
 
     @property
     def hierarchy(self):
@@ -31,5 +49,30 @@ class Control:
     def hierarchy(self, value):
         self._hierarchy = value
 
+    def lock_translate(self, node, value):
+        self.lock(node, value, 'translate')
 
+    def lock_rotate(self, node, value):
+        self.lock(node, value, 'rotate')
+
+    def lock_scale(self, node, value):
+        self.lock(node, value, 'scale')
+
+    def lock_visibility(self, node, value):
+        self.lock(node, value, 'visibility')
+
+    @staticmethod
+    def lock(node, value, attr_type):
+        if isinstance(value, bool):
+            if value is True:
+                if attr_type == 'translate':
+                    attrFn.AttrFn.lock_attr(node, ('tx', 'ty', 'tz'))
+                elif attr_type == 'rotate':
+                    attrFn.AttrFn.lock_attr(node, ('rx', 'ry', 'rz'))
+                elif attr_type == 'scale':
+                    attrFn.AttrFn.lock_attr(node, ('sx', 'sy', 'sz'))
+                else:
+                    attrFn.AttrFn.lock_attr(node, ['v'])
+        else:
+            attrFn.AttrFn.lock_attr(node, value)
 

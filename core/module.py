@@ -6,26 +6,14 @@ class Base:
         self.top_node = '{}_{}'.format(name, 'local')
         self.name = name
         self.module_nodes = ['inputs', 'outputs', 'controls', 'deform']
-        self._module_data = {}
+        self.module_data = {}
 
     def build_module(self):
         pm.createNode('transform', n=self.top_node)
         for each in self.module_nodes:
             node = pm.createNode('transform', n='{}_{}'.format(self.name, each), p=self.top_node)
-            self._module_data[each] = node.name()
+            self.module_data[each] = node.name()
 
-    @property
-    def inputs(self):
-        return self._module_data['inputs']
+    def __getattr__(self, item):
+        return self.module_data.get(item)
 
-    @property
-    def outputs(self):
-        return self._module_data['outputs']
-
-    @property
-    def controls(self):
-        return self._module_data['controls']
-
-    @property
-    def deform(self):
-        return self._module_data['deform']
