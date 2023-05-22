@@ -8,27 +8,21 @@ reload(attrFn)
 
 
 class Control:
-    def __init__(self, name):
-        self._hierarchy = ['zero', 'offset', 'ctrl']
+    def __init__(self, name, config):
+        # self._hierarchy = ['zero', 'offset', 'ctrl']
         self.control_name = name
-        self._node = None
         self._control_data = {}
-        self.translate = True
-        self.rotate = True
-        self.scale = True
-        self.visibility = False
-        self.shape = None
+        self.config = config
 
     def build(self):
         nodes = []
-        for i, each in enumerate(self._hierarchy):
+        for i, each in enumerate(self.config.hierarchy):
             grp = pm.createNode('transform', n='{}_{}'.format(self.control_name, each))
             nodes.append(grp)
             self._control_data[each] = grp.name()
             if i > 0:
                 pm.parent(nodes[i], nodes[i-1])
             if each == self._hierarchy[-1]:
-                self._node = grp
                 self.lock_translate(grp, self.translate)
                 self.lock_rotate(grp, self.rotate)
                 self.lock_scale(grp, self.scale)
@@ -36,18 +30,14 @@ class Control:
 
     def __getattr__(self, item):
         return self._control_data.get(item)
-
-    @property
-    def node(self):
-        return self._node
-
-    @property
-    def hierarchy(self):
-        return self._hierarchy
-
-    @hierarchy.setter
-    def hierarchy(self, value):
-        self._hierarchy = value
+    #
+    # @property
+    # def hierarchy(self):
+    #     return self._hierarchy
+    #
+    # @hierarchy.setter
+    # def hierarchy(self, value):
+    #     self._hierarchy = value
 
     def lock_translate(self, node, value):
         self.lock(node, value, 'translate')

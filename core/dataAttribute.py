@@ -5,20 +5,8 @@ reload(coreMeta)
 
 class DataClass:
     def __init__(self, **kwargs):
-        self.name = 'fk'
-        self.component = None
-        self.module = None
-        self.side = 'M'
-        self.color = 17
-        self.lock_visibility = True
-        self.lock_translate = False
-        self.lock_rotate = False
-        self.lock_scale = False
 
         # internal attributes
-        self.hierarchy = ['zero', 'offset', 'ctrl']
-        self.module_hierarchy = ['inputs', 'outputs', 'controls', 'deform']
-        self.nodes = {}
         self.guide = None
         self.bind = {}
         self.inputs = {}
@@ -32,4 +20,23 @@ class DataClass:
 
     def __getattr__(self, item):
         return self.controls[item]
+
+
+class RigConfig:
+    def __init__(self, **kwargs):
+        self.name = 'fk'
+        self.component = None
+        self.module = None
+        self.side = 'M'
+        self.color = 17
+        self.lock_visibility = True
+        self.lock_translate = False
+        self.lock_rotate = False
+        self.lock_scale = False
+        self.hierarchy = ['zero', 'offset', 'ctrl']
+
+        # override by user input
+        for key, value in kwargs.items():
+            if key in self.__dict__:
+                self.__dict__[key] = value
 
