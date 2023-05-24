@@ -1,4 +1,4 @@
-from ..core import coreMeta
+from test import coreMeta
 from importlib import reload
 reload(coreMeta)
 

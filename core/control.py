@@ -1,15 +1,16 @@
 import pymel.core as pm
 from importlib import reload
-from ..core import coreMeta
-reload(coreMeta)
 
-from ..functions import attrFn
+from ..functions import attrFn, curveFn
 reload(attrFn)
+reload(curveFn)
+
+from ..library import controlShapes
+reload(controlShapes)
 
 
 class Control:
     def __init__(self, name, config):
-        # self._hierarchy = ['zero', 'offset', 'ctrl']
         self.control_name = name
         self._control_data = {}
         self.config = config
@@ -17,27 +18,29 @@ class Control:
     def build(self):
         nodes = []
         for i, each in enumerate(self.config.hierarchy):
-            grp = pm.createNode('transform', n='{}_{}'.format(self.control_name, each))
-            nodes.append(grp)
-            self._control_data[each] = grp.name()
+
+            if each is not self.config.hierarchy[-1]:
+                grp = pm.createNode('transform', n='{}_{}'.format(self.control_name, each))
+                nodes.append(grp)
+                self._control_data[each] = grp.name()
+            else:
+                if self.config.shape:
+                    shape_data = controlShapes.shapes.get(self.config.shape, 'circle')[0]
+                    ctrl = pm.curve(d=shape_data['degree'],
+                                    p=shape_data['point'], k=shape_data['knot'],
+                                    n='{}_{}'.format(self.control_name, each))
+                    nodes.append(ctrl)
+                    self._control_data[each] = ctrl.name()
+                    self.lock_translate(ctrl, self.translate)
+                    self.lock_rotate(ctrl, self.rotate)
+                    self.lock_scale(ctrl, self.scale)
+                    self.lock_visibility(ctrl, self.visibility)
+                    curveFn.set_shape_color(ctrl.getShape().name(), self.config.color)
             if i > 0:
                 pm.parent(nodes[i], nodes[i-1])
-            if each == self._hierarchy[-1]:
-                self.lock_translate(grp, self.translate)
-                self.lock_rotate(grp, self.rotate)
-                self.lock_scale(grp, self.scale)
-                self.lock_visibility(grp, self.visibility)
 
     def __getattr__(self, item):
         return self._control_data.get(item)
-    #
-    # @property
-    # def hierarchy(self):
-    #     return self._hierarchy
-    #
-    # @hierarchy.setter
-    # def hierarchy(self, value):
-    #     self._hierarchy = value
 
     def lock_translate(self, node, value):
         self.lock(node, value, 'translate')

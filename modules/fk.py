@@ -1,22 +1,14 @@
-from ..core import control
-
 import pymel.core as pm
 import maya.cmds as mc
 from importlib import reload
+
+from ..core import control, module, component
 reload(control)
+reload(module)
+reload(component)
 
 from.. modules import chain
 reload(chain)
-
-#
-# from ..core import dataAttribute
-# reload(dataAttribute)
-
-from ..core import module
-reload(module)
-
-from ..core import component
-reload(component)
 
 
 class FK(component.Component):
@@ -49,7 +41,7 @@ class FK(component.Component):
         else:
             pm.warning('Cant find joint chain!!', '{}_{}'.format(self.config.side, self.config.name))
         print(self.data.__dict__)
-        print(self.data.L_Hip_0_fk.ctrl)
+        print(self.config.__dict__)
 
     def post_build(self):
         pass

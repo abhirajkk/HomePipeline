@@ -41,7 +41,6 @@ class Component(ABC):
 
 class Data:
     def __init__(self, **kwargs):
-        self._data = {}
         if kwargs:
             for key, value in kwargs.items():
                 self.__dict__[key] = value

@@ -1,5 +1,3 @@
-from ..core import dataAttribute
-
 '''
        self.name = kwargs.get('name', 'fk')
        self.component = kwargs.get('component', None)
