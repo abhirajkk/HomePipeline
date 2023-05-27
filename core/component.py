@@ -11,6 +11,10 @@ class Component(ABC):
         self.config.hierarchy = ['zero', 'offset', 'ctrl']
         self.config.shape = 'circle'
         self.config.color = 17
+        self.config.lock_translate = False
+        self.config.lock_rotate = False
+        self.config.lock_scale = False
+        self.config.lock_visibility = True
 
     @abstractmethod
     def main(self):

@@ -44,7 +44,7 @@ class FK(component.Component):
         print(self.config.__dict__)
 
     def post_build(self):
-        pass
+        pm.select(clear=True)
 
     def pre_build(self):
         pass
