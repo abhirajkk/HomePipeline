@@ -1,56 +1,37 @@
 import maya.cmds as mc
 import os
 import json
+
 PROJECT_PATH = r'D:\work\Home_project'
-PROJECT_HIERARCHY = {
-                     'assets': ['CHAR', 'PROP'],
-                     'dept': ['MDL', 'RIG', 'SUR'],
-                     'build': ['build'],
-                     'data': ['control', 'skeleton', 'mesh', 'deformer']
-                     }
+
+PROJECT_HIERARCHY = ('CHAR', 'PROP')
+
+DEPT = ('MDL', 'RIG', 'SUR')
+RIG = ('BUILD', 'DATA', 'RIG')
+DATA = ('control', 'skeleton', 'mesh', 'deformer')
 
 
 class PROJECT:
     def __init__(self):
         self.project = None
         self.assets = []
-        self.dept = []
-        self.data = None
-        self.rig_data = []
-        self.build_data = None
+        self._asset = None
 
-    def get_project(self):
+    def get(self, name):
+        # self.project = self.create_folder(name, PROJECT_PATH)
         return self.project
 
-    def get_char(self):
-        return self.assets[0]
+    def get_asset(self, name):
+        return os.path.join(self.project, self.assets[0], name)
 
-    def get_prop(self):
-        return self.assets[1]
+    def get_build(self, asset):
+        return os.path.join(self.get_asset(asset), 'RIG', 'BUILD')
 
-    def get_build(self):
-        return self.build_data
-
-    def get_data(self):
-        return self.data
-
-    def get_control(self):
-        return self.rig_data[0]
-
-    def get_skeleton(self):
-        return self.rig_data[1]
-
-    def get_mesh(self):
-        return self.rig_data[2]
-
-    def get_deformer(self):
-        return self.rig_data[-1]
-
-    def add_project(self, name='RAIN'):
+    def create(self, name='RAIN'):
         self.project = self.create_folder(name, PROJECT_PATH)
 
         # assets
-        for asset in PROJECT_HIERARCHY['assets']:
+        for asset in PROJECT_HIERARCHY:
             self.assets.append(self.create_folder(asset, self.project))
 
     def add_asset(self, name='Rain', asset_type='CHAR'):
@@ -60,15 +41,17 @@ class PROJECT:
         else:
             asset = self.create_folder(name, self.assets[1])
 
-        for stage in PROJECT_HIERARCHY['dept']:
-            self.dept.append(self.create_folder(stage, asset))
+        # mdl rig surf
+        dept = []
+        for stage in DEPT:
+            dept.append(self.create_folder(stage, asset))
+        # rig
+        rig_stage = []
+        for process in RIG:
+            rig_stage.append(self.create_folder(process, dept[1]))
 
-        for data in PROJECT_HIERARCHY['data']:
-            self.data = self.create_folder('DATA', self.dept[1])
-            self.rig_data.append(self.create_folder(data, self.data))
-
-        # for bld in PROJECT_HIERARCHY['build']:
-        self.build_data = self.create_folder('BUILD', self.dept[1])
+        for data in DATA:
+            self.create_folder(data, rig_stage[1])
 
     @staticmethod
     def create_folder(name, root):

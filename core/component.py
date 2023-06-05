@@ -44,9 +44,9 @@ class Component(ABC):
         self.pre_build()
         self.main()
         self.post_build()
-        if self.config.__dict__.get('build_data'):
-            path = os.path.join(self.config.build_data, '{}_{}_{}.json'.format(self.config.side, self.config.name,
-                                                                               self.config.module))
+        if self.config.__dict__.get('build'):
+            path = os.path.join(self.config.build, '{}_{}_{}.json'.format(self.config.side, self.config.name,
+                                                                          self.config.module))
             with open(path, 'w') as fh:
                 json.dump(self.config.__dict__, fh, indent=4)
 
