@@ -50,6 +50,9 @@ class Component(ABC):
             with open(path, 'w') as fh:
                 json.dump(self.config.__dict__, fh, indent=4)
 
+    def attach(self):
+        pass
+
 
 class Data:
     def __init__(self, **kwargs):

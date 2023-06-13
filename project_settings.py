@@ -13,33 +13,54 @@ DATA = ('control', 'skeleton', 'mesh', 'deformer')
 
 class PROJECT:
     def __init__(self):
-        self.project = None
-        self.assets = []
+        self._project = None
+        self.rig_type = []
         self._asset = None
 
-    def get(self, name):
-        # self.project = self.create_folder(name, PROJECT_PATH)
-        return self.project
+    @property
+    def asset(self):
+        return self._asset
+
+    @asset.setter
+    def asset(self, asset_name):
+        asset_path = os.path.join(self.rig_type[0], asset_name, 'RIG', 'BUILD')
+        if os.path.exists(asset_path):
+            self._asset = asset_path
+        else:
+            self.add_asset(asset_name)
+
+    @property
+    def project(self):
+        return self._project
+
+    @project.setter
+    def project(self, project_name):
+        inst = self.from_json(project_name)
+        if inst:
+            self._project = inst._project
+            self.rig_type = inst.rig_type
+        else:
+            self.create(project_name)
 
     def get_asset(self, name):
-        return os.path.join(self.project, self.assets[0], name)
+        return os.path.join(self._project, self.rig_type[0], name)
 
     def get_build(self, asset):
         return os.path.join(self.get_asset(asset), 'RIG', 'BUILD')
 
     def create(self, name='RAIN'):
-        self.project = self.create_folder(name, PROJECT_PATH)
+        self._project = self.create_folder(name, PROJECT_PATH)
 
-        # assets
+        # rig_type
         for asset in PROJECT_HIERARCHY:
-            self.assets.append(self.create_folder(asset, self.project))
+            self.rig_type.append(self.create_folder(asset, self._project))
+        self.to_json()
 
     def add_asset(self, name='Rain', asset_type='CHAR'):
-
         if asset_type == 'CHAR':
-            asset = self.create_folder(name, self.assets[0])
+            asset = self.create_folder(name, self.rig_type[0])
         else:
-            asset = self.create_folder(name, self.assets[1])
+            asset = self.create_folder(name, self.rig_type[1])
 
         # mdl rig surf
         dept = []
@@ -52,6 +73,7 @@ class PROJECT:
 
         for data in DATA:
             self.create_folder(data, rig_stage[1])
+        self.to_json()
 
     @staticmethod
     def create_folder(name, root):
@@ -61,16 +83,19 @@ class PROJECT:
         return path
 
     def to_json(self):
-        path = os.path.join(self.project, 'data.json')
+        path = os.path.join(self._project, 'data.json')
         with open(path, 'w') as fh:
             json.dump(self.__dict__, fh, indent=4)
 
     @classmethod
     def from_json(cls, project_name):
-        with open(os.path.join(PROJECT_PATH, project_name, 'data.json'), 'r') as fh:
-            data = json.load(fh)
-            cls_obj = cls()
-            for key, value in data.items():
-                cls_obj.__dict__[key] = value
-            return cls_obj
-
+        path = os.path.join(PROJECT_PATH, project_name, 'data.json')
+        if os.path.exists(path):
+            with open(path, 'r') as fh:
+                data = json.load(fh)
+                cls_obj = cls()
+                for key, value in data.items():
+                    cls_obj.__dict__[key] = value
+                return cls_obj
+        else:
+            return None

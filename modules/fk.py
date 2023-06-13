@@ -15,7 +15,7 @@ class FK(component.Component):
     def __init__(self, **kwargs):
         super(FK, self).__init__()
         self.config.__init__(**kwargs)
-        self.module_obj = module.Base(f'{self.config.side}_{self.config.name}{self.config.module}')
+        self.module_obj = module.Base(f'{self.config.side}_{self.config.name}_{self.config.module}')
 
     def main(self):
         self.guide = chain.Chain.get_chain_from_scene('{}_{}'.format(self.config.side, self.config.name))
@@ -40,8 +40,6 @@ class FK(component.Component):
 
         else:
             pm.warning('Cant find joint chain!!', '{}_{}'.format(self.config.side, self.config.name))
-        print(self.data.__dict__)
-        print(self.config.__dict__)
 
     def post_build(self):
         pm.select(clear=True)
