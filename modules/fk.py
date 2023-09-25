@@ -29,7 +29,9 @@ class FK(component.Component):
                 ctrl_obj.build()
 
                 # post
-                self.data[control_name] = ctrl_obj
+                # self.data[control_name] = ctrl_obj
+                self.data.append(ctrl_obj)
+                self.controls.append(ctrl_obj.ctrl)
                 pm.matchTransform(ctrl_obj.zero, joint)
                 zero_nodes.append(ctrl_obj.zero)
                 ctrl_nodes.append(ctrl_obj.ctrl)
@@ -41,11 +43,16 @@ class FK(component.Component):
         else:
             pm.warning('Cant find joint chain!!', '{}_{}'.format(self.config.side, self.config.name))
 
+        if self.config.has_chain:
+            self.build_chain()
+
     def post_build(self):
         pm.select(clear=True)
+        self.parent()
 
     def pre_build(self):
         pass
 
-    def build_chain(self):
-        pass
+    def parent(self):
+        # pm.parent(self.module_obj.top_node, self.config.parent)
+        pm.parent(self.module_obj.top_node, self.attach_module)

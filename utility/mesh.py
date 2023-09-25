@@ -36,7 +36,6 @@ def get_closest_vertices(mesh, positions, tolerance=1.0):
         all_positions.append(pm.xform(each, q=1, t=1, ws=1))
 
     np_transform = numpy.array(all_positions)
-    np_transform[0][0]
 
     mesh_tree = KDTree(mesh_pnts)
 

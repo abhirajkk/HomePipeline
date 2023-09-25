@@ -9,7 +9,10 @@ class Component(ABC):
     def __init__(self):
         self.guide = None
         self.chain = None
-        self.data = Data()
+        self.data = []
+        self.controls = []
+        self.joints = []
+        self._attach_module = None
         self.config = Data()
         self.config.hierarchy = ['zero', 'offset', 'ctrl']
         self.config.shape = 'circle'
@@ -32,26 +35,28 @@ class Component(ABC):
         pass
 
     def build_chain(self):
-        if self.guide:
-            for each in self.guide:
-                jnt = cmds.createNode('joint', n=each.replace('_guide', '_SJ'))
-                cmds.matchTransform(jnt, each)
 
-    def parent(self):
-        cmds.parent(self.config.parent, self.data.zero)
+        if self.guide:
+            for i, each in enumerate(self.guide):
+                self.joints.append(cmds.createNode('joint', n=each.replace('_JNT', '_SJ'), p=self.data[i].ctrl))
 
     def build(self):
         self.pre_build()
         self.main()
         self.post_build()
-        if self.config.__dict__.get('build'):
-            path = os.path.join(self.config.build, '{}_{}_{}.json'.format(self.config.side, self.config.name,
-                                                                          self.config.module))
-            with open(path, 'w') as fh:
-                json.dump(self.config.__dict__, fh, indent=4)
+        # if self.config.__dict__.get('build'):
+        #     path = os.path.join(self.config.build, '{}_{}_{}.json'.format(self.config.side, self.config.name,
+        #                                                                   self.config.module))
+        #     with open(path, 'w') as fh:
+        #         json.dump(self.config.__dict__, fh, indent=4)
 
-    def attach(self):
-        pass
+    @property
+    def attach_module(self):
+        return self._attach_module
+
+    @attach_module.setter
+    def attach_module(self, value):
+        self._attach_module = value
 
 
 class Data:

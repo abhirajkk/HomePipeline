@@ -6,28 +6,31 @@ reload(project_settings)
 from .modules import fk
 reload(fk)
 
+from .modules import placer
+reload(placer)
+
+from .core import build
+reload(build)
+
 
 def main():
 
     env = project_settings.PROJECT()
-    # env.create('Rain')
-    # env.add_asset('Rain')
-    # env.to_json()
-    # env = x.from_json('RAIN')
-    # print(env.get_build('Rain'))
-
     env.project = 'RAIN'
     env.asset = 'Rain'
 
+    rig = build.Build()
+    rig.env = env.asset
+
     # #
+    placer_obj = placer.Placer(name='placer', module='FK', side="M", shape='circle', asset_name='RAIN')
+    rig.add_module(placer_obj)
 
-    root_fk = fk.FK(name='Root', module='FK', side="M", shape='square')
-    root_fk.config['build'] = env.asset
-    root_fk.build()
+    fk_test = fk.FK(name='Hip', module='FK', side="L", shape='square', has_chain=True)
+    fk_test.attach_module = placer_obj.controls[-1]
+    rig.add_module(fk_test)
 
-    fk_test = fk.FK(name='Hip', module='FK', side="L", shape='square')
-    fk_test.config['build'] = env.asset
-    fk_test.build()
+    rig.build()
 
 
 if __name__ == '__main__':
